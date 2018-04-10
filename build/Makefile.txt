@@ -1,34 +1,24 @@
 ## To Do make more distro Agnostic.
 ## easier install on ny Linux/Unix platforms.
-# abuse Gentoo Ebuilds /emake --install wrapper to build "binary" 
+# abuse Gentoo Ebuilds /emake (sandbox Make) --install wrapper to build "binary" 
 
 ######### ADD .PHONY Targets to Lump in
-.PHONY: install: install_airgeddon install_symlinks
-.PHONY: clean: clean_install_symlinks clean_install_symlinks clean_doc
-
-
-#FILES = ./airgeddon/airgeddon.sh 
-
-
+.PHONY: 
+install: install_airgeddon install_symlinks doc
+.PHONY: 
+clean: clean_install clean_install_symlinks clean_doc
+.PHONY: 
+uninstall : clean_install clean_install_symlinks clean_doc
 USER=$(shell id -u)
 
 ifeq ($(USER),0)
-	# As root, install Dshell systemwide
-	DESTDIR=/usr/share/airgeddon
-	DESTPERMS=755
+# As root, install airgeddon systemwide
+DESTDIR=/usr/share/airgeddon
+DESTPERMS=755
   DOCDIR=/usr/share/doc/airgeddon
   LICDIR=/usr/share/doc/airgeddon
-	SYMLINKDIR=/usr/bin/
+  SYMLINKDIR=/usr/bin/
 endif
-
-default: airgeddon
-
-airgeddon:  doc
-
-
-
-uninstall: uninstall_main uninstall_symlinks
-
 
 
 install_airgeddon:
@@ -37,13 +27,8 @@ install_airgeddon:
 	mkdir -m $(DESTPERMS) -p $(DESTDIR)
   cp ./airgeddon/build/airgeddon-launch.sh /usr/bin/airgeddon-launch.sh && chmod +x /usr/bin/airgeddon
 	
-
-
-
-
-
 doc:
-	# airgeddon library documentation
+ # airgeddon library documentation
   #FILES = ./airgeddon/C*.md
 	(cp ./airgeddon/C*.md $(DOCDIR) )
   (cp ./airgeddon/README.md $(DOCDIR) )
@@ -69,6 +54,3 @@ uninstall_symlinks:
 	# Removing symlinks to airgeddon
 	rm -fv $(SYMLINKDIR)/airgeddon
 	rm -fv $(SYMLINKDIR)/airgeddon-launcher.sh
-
-uninstall_main:
-	rm -rv $(DESTDIR)
