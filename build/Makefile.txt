@@ -1,1 +1,74 @@
 ## To Do make more distro Agnostic.
+## easier install on ny Linux/Unix platforms.
+# abuse Gentoo Ebuilds /emake --install wrapper to build "binary" 
+
+######### ADD .PHONY Targets to Lump in
+.PHONY: install: install_airgeddon install_symlinks
+.PHONY: clean: clean_install_symlinks clean_install_symlinks clean_doc
+
+
+#FILES = ./airgeddon/airgeddon.sh 
+
+
+USER=$(shell id -u)
+
+ifeq ($(USER),0)
+	# As root, install Dshell systemwide
+	DESTDIR=/usr/share/airgeddon
+	DESTPERMS=755
+  DOCDIR=/usr/share/doc/airgeddon
+  LICDIR=/usr/share/doc/airgeddon
+	SYMLINKDIR=/usr/bin/
+endif
+
+default: airgeddon
+
+airgeddon:  doc
+
+
+
+uninstall: uninstall_main uninstall_symlinks
+
+
+
+install_airgeddon:
+	# Copying files to DESTDIR
+	$(info Installing airgeddon in $(DESTDIR))
+	mkdir -m $(DESTPERMS) -p $(DESTDIR)
+  cp ./airgeddon/build/airgeddon-launch.sh /usr/bin/airgeddon-launch.sh && chmod +x /usr/bin/airgeddon
+	
+
+
+
+
+
+doc:
+	# airgeddon library documentation
+  #FILES = ./airgeddon/C*.md
+	(cp ./airgeddon/C*.md $(DOCDIR) )
+  (cp ./airgeddon/README.md $(DOCDIR) )
+  (cp ./airgeddon/README.md $(DOCDIR) )
+  (cp ./airgeddon/LICENSE.md $(LICDIR ) )
+
+clean_doc:
+	# Cleaning the documentation files 
+  # pandoc md 2 manpage would be a nice touch but not a deal breaker.
+	find $(DOCDIR)/doc -name '*.md*' -exec rm -v {} \;
+  find $(LICDIR)/doc -name '*.md*' -exec rm -v {} \;
+
+clean_install:
+	# Cleaning any generated airgeddon files
+	find $(DESTDIR) -name '*.sh' -exec rm -v {} \;
+
+
+install_symlinks:
+	# Creating symlinks to airgeddon
+	ln -fvs $(SYMLINKDIR)/airgeddon-launch.sh airgeddon
+
+uninstall_symlinks:
+	# Removing symlinks to airgeddon
+	rm -fv $(SYMLINKDIR)/airgeddon
+	rm -fv $(SYMLINKDIR)/airgeddon-launcher.sh
+
+uninstall_main:
+	rm -rv $(DESTDIR)
