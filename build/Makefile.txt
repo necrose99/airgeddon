@@ -1,6 +1,6 @@
 ## To Do make more distro Agnostic.
 ## easier install on ny Linux/Unix platforms.
-# abuse Gentoo Ebuilds /emake (sandbox Make) --install wrapper to build "binary" 
+# Easier Gentoo ebuilds via Emake Makefile wrapper. 
 
 ######### ADD .PHONY Targets to Lump in
 .PHONY: 
@@ -16,16 +16,19 @@ ifeq ($(USER),0)
 DESTDIR=/usr/share/airgeddon
 DESTPERMS=755
   DOCDIR=/usr/share/doc/airgeddon
-  LICDIR=/usr/share/doc/airgeddon
+  LICDIR=/usr/share/licence/airgeddon
   SYMLINKDIR=/usr/bin/
+  if (whoami != root)
+  then echo "Please run as root"
 endif
 
 
 install_airgeddon:
-	# Copying files to DESTDIR
-	$(info Installing airgeddon in $(DESTDIR))
-	mkdir -m $(DESTPERMS) -p $(DESTDIR)
-  cp ./airgeddon/build/airgeddon-launch.sh /usr/bin/airgeddon-launch.sh && chmod +x /usr/bin/airgeddon
+# Copying files to DESTDIR /usr/share/airgeddon
+$(info Installing airgeddon in $(DESTDIR))
+mkdir -m $(DESTPERMS) -p $(DESTDIR)
+cp ./airgeddon/build/airgeddon-launch.sh /usr/bin/airgeddon-launch.sh && chmod +x /usr/bin/airgeddon
+cp ./airgeddon/{*.sh,*.db} $(DESTDIR))
 	
 doc:
  # airgeddon library documentation
@@ -44,6 +47,7 @@ clean_doc:
 clean_install:
 	# Cleaning any generated airgeddon files
 	find $(DESTDIR) -name '*.sh' -exec rm -v {} \;
+	find $(DESTDIR) -name '*.db' -exec rm -v {} \;
 
 
 install_symlinks:
